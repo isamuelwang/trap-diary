@@ -6,7 +6,7 @@
 
 #### 标题：正则表达式参考表
 
-​	. 	- Any Character Except New Line
+​	. 	- Any Character Except New Line 
 \d 	- Digit (0-9)
 \D 	- Not a Digit (0-9)
 \w 	- Word Character (a-z, A-Z, 0-9, _)
