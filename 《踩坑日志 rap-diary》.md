@@ -14,7 +14,7 @@
 \s	 - Whitespace (space, tab, newline)
 \S	 - Not Whitespace (space, tab, newline)
 
-\b	 - Word Boundary
+\b	 - Word Boundary 
 \B	 - Not a Word Boundary
 ^	 - Beginning of a String
 $	 - End of a String
