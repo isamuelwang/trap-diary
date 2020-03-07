@@ -233,7 +233,7 @@ docker run --name redis -p 6379:6379 -d --restart=always redis:latest redis-serv
 
 #### ==编号：2020.1.19.2==
 
-#### **标题：docker安装Redisrabbitmq**
+#### **标题：docker安装Redis rabbitmq**
 
 1. 安装镜像（使用management版本）
 
@@ -530,17 +530,139 @@ root: 超级用户
 
 #### 标题：docker MYsql registry安装
 
+```
+譬如我要启动一个centos容器，宿主机的/test目录挂载到容器的/soft目录，可通过以下方式指定：
+
+# docker run -it -v /test:/soft centos /bin/bash冒号":"前面的目录是宿主机目录，后面的目录是容器内目录。
+```
+
 1. **安装命令**
 
    ````
-   docker run -d -p 3306:3306 --restart always --privileged=true --name mysql -e MYSQL_ROOT_PASSWORD=123456 -v=/root/docker/mysql/config/my.cnf:/etc/mysql/conf.d/mysql.cnf -v=/root/docker/mysql/data:/var/lib/mysql centos/mysql-57-centos7
+   docker run -d -p 3306:3306 -v /root/docker/mysql/my.cnf:/etc/mysql/conf.d/mysqld.cnf -v /root/docker/data/mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=@asdend123 --name mysql mysql
    ````
 
-2. registry安装
+2. mysql8.0之后需要进行允许远程的配置
+
+   **Navicat 远程连接docker容器中的mysql 报错1251 - Client does not support authentication protocol 解决办法**
+   
+   docker exec -it mysql /bin/bash
+   
+   mysql -uroot -p
+   
+   1,容器中登录mysql,查看mysql的版本
+   
+   mysql> status;
+   
+   \--------------
+   
+   mysql Ver 8.0.11 for Linux on x86_64 (MySQL Community Server - GPL)
+   
+   2,进行授权远程连接(注意mysql 8.0跟之前的授权方式不同)
+   
+   授权
+   
+   ````
+   GRANT ALL ON *.* TO 'root'@'%';
+   ````
+   
+   刷新权限
+   
+   ````
+   flush privileges;
+   ````
+   
+   　此时,还不能远程访问,因为Navicat只支持旧版本的加密,需要更改mysql的加密规则
+   
+   3,更改加密规则
+   
+   ````
+   ALTER USER 'root'@'localhost'IDENTIFIED BY 'password'PASSWORD EXPIRE NEVER;
+   ````
+   
+   4,更新root用户密码
+   
+   ````
+   ALTER USER 'root'@'%'IDENTIFIED WITH mysql_native_password BY '123456';
+   ````
+   
+   刷新权限
+   
+   ````
+   flush privileges;
+   ````
+   
+   OK，设置完成，再次使用 Navicat 连接数据库
+   
+3. registry安装
 
    ````
    docker run -d -p 5000:5000 --restart=always --name registry -v /root/docker/registry:/var/lib/registry registry
    ````
+
+## 2019.2.14
+
+#### ==编号：2020.2.14.1==
+
+#### 标题centosf防火墙
+
+1. **问题**
+
+   防火墙配置
+
+2. **解决方法**
+
+   **（1）查看firewall服务状态**
+
+   ````
+   systemctl status firewalld
+   ````
+
+   (2)**查看firewall的状态**
+
+   ````
+   firewall-cmd --state
+   ````
+
+   (3)**开启、\**重启、关闭、\**firewalld.service服务**
+
+   ````
+   # 开启
+   service firewalld start
+   # 重启
+   service firewalld restart
+   # 关闭
+   service firewalld stop
+   ````
+
+   (4)**查看防火墙规则**
+
+   ````
+   firewall-cmd --list-all 
+   ````
+
+   (5)**查询、开放、关闭端口**
+
+   ````
+   # 查询端口是否开放
+   firewall-cmd --query-port=8080/tcp
+   # 开放80端口
+   firewall-cmd --permanent --add-port=80/tcp
+   # 移除端口
+   firewall-cmd --permanent --remove-port=8080/tcp
+   
+   #重启防火墙(修改配置后要重启防火墙)
+   firewall-cmd --reload
+   
+   # 参数解释
+   1、firwall-cmd：是Linux提供的操作firewall的一个工具；
+   2、--permanent：表示设置为持久；
+   3、--add-port：标识添加的端口；
+   ````
+
+   
+
+
 
 ## 2019.1.1
 
@@ -561,8 +683,6 @@ root: 超级用户
    
 
 4. **总结**
-
-
 
 
 
